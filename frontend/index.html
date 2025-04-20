@@ -69,6 +69,8 @@
             ).join('')}
           </ul>
         `;
+        const icon = Icon({ name: 'check', size: 18, color: 'orange' });
+        document.getElementById('userInfo').before(icon);
       }
       window.addEventListener('DOMContentLoaded', loadUser);
     </script>
