@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 
@@ -7,17 +8,26 @@ const app = express();
 const PORT = 4000;
 const SECRET = 'demo-secret';
 
+allowedOrigin = "http://localhost:5173"
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: function(origin,callback){
+    if(origin === allowedOrigin){
+    callback(null,true);
+    } else {
+      callback(new Error('mammnoo3 l3ziz'));
+    }
+  },
   credentials: true
 }));
+
+
 app.use(bodyParser.json());
 
 // 🔒 In-memory fake user DB
 const users = {
-    'user@example.com': {
-      name: 'John Hacker',
-      email: 'user@example.com',
+    'kwairi@gmail.com': {
+      name: 'Salim Bouziane',
+      email: 'kwairi@gmail.com',
       password: 'user123', // 👈 add password
       messages: [
         { from: 'alice@example.com', content: 'Hey John!' },
@@ -43,7 +53,6 @@ const users = {
       isAdmin: true
     }
   };
-// 🧠 Helper to verify token
 function verifyToken(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth?.startsWith('Bearer ')) return res.status(401).send('Unauthorized');
@@ -92,6 +101,9 @@ app.get('/api/admin', verifyToken, (req, res) => {
 
 app.get('/api/user', verifyToken, (req, res) => {
     res.json(req.user); // Includes name, email, messages, settings, isAdmin
+  });
+  app.get('/api/userinfo', verifyToken, (req, res) => {
+    res.json(req.user.name); // Includes name, email, messages, settings, isAdmin
   });
 app.listen(PORT, () => {
   console.log(`🔐 Backend running at http://localhost:${PORT}`);

