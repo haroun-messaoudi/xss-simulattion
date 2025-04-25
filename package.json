@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"node backend/server.js\" \"node icons_libirary/server.js\" \"node attacker_server/server.js\" \"npm run dev --prefix frontend\""
+
   },
   "keywords": [],
   "author": "",

