@@ -7,11 +7,30 @@ const app = express();
 const PORT = 4000;
 const SECRET = 'demo-secret';
 
+
 app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
+  origin: '*', // allow requests from all origins (attacker's server)
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     // Only allow requests from localhost:5173
+//     if (origin === 'http://localhost:5173') {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true,
+//   methods: ['GET', 'POST'],
+//   allowedHeaders: ['Content-Type', 'Authorization']
+// }));
+
 app.use(bodyParser.json());
+
+
 
 // database simulation 
 const users = {
